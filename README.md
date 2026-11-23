@@ -100,11 +100,12 @@ savitools/
 │   │       ├── rpc/              # Soroban RPC Runner
 │   │       ├── qr-handoff/       # Air-gapped QR transaction handoff
 │   │       ├── liquidity-pools/  # Liquidity Pool Explorer
-│   │       └── [locale]/         # Localized routes (i18n)
-│   │           ├── soroban-storage/  # Soroban Storage Explorer
-│   │           ├── sep10/            # SEP-10 WebAuth Helper
-│   │           ├── sequence-planner/ # Sequence Bump Planner
-│   │           └── stellar-toml/     # Stellar TOML Inspector
+│   │       ├── soroban-expiration/ # TTL & expiration estimator
+│   │       ├── sep10/            # SEP-10 WebAuth Helper
+│   │       ├── sequence-planner/ # Sequence Bump Planner
+│   │       ├── soroban-storage/  # Soroban Storage Explorer
+│   │       ├── stellar-toml/     # Stellar TOML Inspector
+│   │       └── [locale]/         # Mirrored localized routes (i18n)
 │   │
 │   └── api/                      # NestJS backend
 │       └── src/modules/
@@ -371,17 +372,17 @@ SaviTools is a standalone product with its own users and branding, but it's purp
 
 Complete guides and API reference for integrating with SaviTools:
 
-| Resource                                                                   | Purpose                                                                     |
-| -------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| **[API Reference](docs/api-reference.md)**                                 | Complete endpoint catalog with examples, parameters, and error codes        |
-| **[Quickstart Guide](docs/quickstart.md)**                                 | End-to-end walkthrough: generate keypair → fund → send payment in 5 minutes |
-| **[Ledger Monitor Load Test](docs/ledger-monitor-load-test.md)**           | Recorded result from the one-hour, 50-connection SSE load test              |
-| **[Playground Host Smoke Check](docs/playground-host-smoke.md)**           | Read-only release check for the public production/testnet API bases         |
-| **[OpenAPI Contract Gate](docs/openapi-contract.md)**                      | CI check that keeps the generated OpenAPI document aligned with API routes  |
-| **[Browser & Wallet Compatibility](docs/browser-wallet-compatibility.md)** | Supported browsers, Freighter assumptions, and degraded behavior            |
-| **[Redis-degraded troubleshooting](docs/troubleshooting-redis.md)** | Symptoms and recovery when local Redis is down |
-| **[Browser Storage & Retention](docs/browser-storage-and-retention.md)**   | Key taxonomy, quota limits, eviction policies, and degradation behavior     |
-| **[Swagger UI](/api/docs)**                                                | Interactive API explorer (available in dev/staging; disabled in production) |
+| Resource                                                                   | Purpose                                                                      |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **[API Reference](docs/api-reference.md)**                                 | Complete endpoint catalog with examples, parameters, and error codes         |
+| **[Quickstart Guide](docs/quickstart.md)**                                 | End-to-end walkthrough: generate keypair → fund → send payment in 5 minutes  |
+| **[Ledger Monitor Load Test](docs/ledger-monitor-load-test.md)**           | Recorded result from the one-hour, 50-connection SSE load test               |
+| **[Playground Host Smoke Check](docs/playground-host-smoke.md)**           | Read-only release check for the public production/testnet API bases          |
+| **[OpenAPI Contract Gate](docs/openapi-contract.md)**                      | CI check that keeps the generated OpenAPI document aligned with API routes   |
+| **[Browser & Wallet Compatibility](docs/browser-wallet-compatibility.md)** | Supported browsers, Freighter assumptions, and degraded behavior             |
+| **[Redis-degraded troubleshooting](docs/troubleshooting-redis.md)**        | Symptoms and recovery when local Redis is down                               |
+| **[Browser Storage & Retention](docs/browser-storage-and-retention.md)**   | Key taxonomy, quota limits, eviction policies, and degradation behavior      |
+| **[Swagger UI](/api/docs)**                                                | Interactive API explorer (available in dev/staging; disabled in production)  |
 | Resource                                                                   | Purpose                                                                      |
 | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | **[Architecture Map](docs/architecture-map.md)**                           | System topology: web tools, 26 API modules, and shared integration contracts |

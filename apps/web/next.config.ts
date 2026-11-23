@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
 
 import { playgroundConnectOrigins } from './src/lib/playground-origins';
 
@@ -11,8 +12,7 @@ const isProd = process.env.NODE_ENV === 'production';
  * NEXT_PUBLIC_API_URL is set by the deployment environment.  The trailing
  * slash is stripped so concatenation stays predictable.
  */
-const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001')
-  .replace(/\/$/, '');
+const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001').replace(/\/$/, '');
 const cspReportEndpoint = `${apiBase}/api/v1/csp-report`;
 
 /**
@@ -144,4 +144,4 @@ const nextConfig: NextConfig = {
   turbopack: {},
 };
 
-export default nextConfig;
+export default createNextIntlPlugin('./src/i18n.ts')(nextConfig);
