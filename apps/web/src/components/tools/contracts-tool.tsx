@@ -22,28 +22,17 @@ import {
   type AbiCatalogEntry,
   type DeployedContract,
 } from '@/lib/api';
+import { BROWSER_STORAGE_KEYS, safeGetItem, safeSetItem } from '@/lib/browser-storage';
 
 const STELLAR_EXPERT_URL = 'https://stellar.expert/explorer/testnet/contract';
 
 function loadHistory(): DeployedContract[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = window.localStorage.getItem('savitools:contracts:history');
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  const parsed = safeGetItem<DeployedContract[]>(BROWSER_STORAGE_KEYS.CONTRACTS_HISTORY, []);
+  return Array.isArray(parsed) ? parsed : [];
 }
 
 function saveHistory(contracts: DeployedContract[]) {
-  if (typeof window === 'undefined') return;
-  try {
-    // Keep most recent 50 contracts to preserve browser storage quota
-    const bounded = contracts.slice(0, 50);
-    window.localStorage.setItem('savitools:contracts:history', JSON.stringify(bounded));
-  } catch {
-    // Gracefully ignore storage quota or restriction errors
-  }
+  safeSetItem(BROWSER_STORAGE_KEYS.CONTRACTS_HISTORY, contracts.slice(0, 50));
 }
 
 function AbiCatalogPanel({ contractId }: { contractId: string }) {

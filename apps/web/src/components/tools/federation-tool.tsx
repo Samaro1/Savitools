@@ -39,6 +39,7 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ErrorState } from './state-display';
+import { BROWSER_STORAGE_KEYS, safeGetItem, safeSetItem } from '@/lib/browser-storage';
 
 type InputType = 'publicKey' | 'federation' | 'domain';
 
@@ -47,21 +48,15 @@ interface SavedCounterparty {
   name: string;
 }
 
-const COUNTERPARTY_STORAGE_KEY = 'savitools:federation:counterparties';
+const COUNTERPARTY_STORAGE_KEY = BROWSER_STORAGE_KEYS.FEDERATION_COUNTERPARTIES;
 
 function loadSavedCounterparties(): SavedCounterparty[] {
-  try {
-    const saved = window.localStorage.getItem(COUNTERPARTY_STORAGE_KEY);
-    if (!saved) return [];
-    const parsed: unknown = JSON.parse(saved);
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
-      (item): item is SavedCounterparty =>
-        typeof item?.input === 'string' && typeof item?.name === 'string',
-    );
-  } catch {
-    return [];
-  }
+  const parsed = safeGetItem<unknown>(COUNTERPARTY_STORAGE_KEY, []);
+  if (!Array.isArray(parsed)) return [];
+  return parsed.filter(
+    (item): item is SavedCounterparty =>
+      typeof item?.input === 'string' && typeof item?.name === 'string',
+  );
 }
 
 function detectInputType(value: string): InputType | null {
@@ -879,13 +874,7 @@ export function FederationTool() {
   }, []);
 
   useEffect(() => {
-    try {
-      // Bound counterparties to 50 entries to prevent quota exhaustion
-      const bounded = savedCounterparties.slice(0, 50);
-      window.localStorage.setItem(COUNTERPARTY_STORAGE_KEY, JSON.stringify(bounded));
-    } catch {
-      // Gracefully ignore storage quota or restriction errors
-    }
+    safeSetItem(COUNTERPARTY_STORAGE_KEY, savedCounterparties.slice(0, 50));
   }, [savedCounterparties]);
 
   useEffect(() => {

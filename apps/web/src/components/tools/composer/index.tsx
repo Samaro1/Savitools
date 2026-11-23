@@ -38,6 +38,7 @@ import {
   WorkspaceFormatError,
 } from '@/lib/workspace-format';
 import { apiErrorMessage } from '@/lib/api';
+import { BROWSER_STORAGE_KEYS, safeGetItem, safeSetItem } from '@/lib/browser-storage';
 import {
   Code2,
   Zap,
@@ -476,18 +477,15 @@ export function ComposerTool() {
   // Workspace persistence (localStorage)
   // ---------------------------------------------------------------------------
   useEffect(() => {
-    const stored = localStorage.getItem('composer-workspaces');
-    if (stored) {
-      try {
-        setWorkspaces(JSON.parse(stored));
-      } catch {
-        // ignore malformed storage
-      }
-    }
+    const stored = safeGetItem<Workspace[] | null>(
+      BROWSER_STORAGE_KEYS.LEGACY_COMPOSER_WORKSPACES,
+      null,
+    );
+    if (Array.isArray(stored)) setWorkspaces(stored);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('composer-workspaces', JSON.stringify(workspaces));
+    safeSetItem(BROWSER_STORAGE_KEYS.LEGACY_COMPOSER_WORKSPACES, workspaces);
   }, [workspaces]);
 
   const getCurrentComposerState = () => ({

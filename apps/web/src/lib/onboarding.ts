@@ -1,7 +1,8 @@
 import { EXAMPLE_TX_HASH } from './examples';
+import { BROWSER_STORAGE_KEYS, safeGetItem, safeSetItem } from './browser-storage';
 
-export const ONBOARDING_STORAGE_KEY = 'savitools_onboarding_progress';
-export const ONBOARDING_DISMISSED_KEY = 'savitools_onboarding_dismissed';
+export const ONBOARDING_STORAGE_KEY = BROWSER_STORAGE_KEYS.ONBOARDING;
+export const ONBOARDING_DISMISSED_KEY = BROWSER_STORAGE_KEYS.ONBOARDING_DISMISSED;
 
 export type OnboardingStepId = 'inspect' | 'sandbox' | 'simulate' | 'fluxa';
 
@@ -66,19 +67,12 @@ export function isAllComplete(progress: OnboardingProgress): boolean {
 }
 
 export function readProgress(): OnboardingProgress {
-  if (typeof window === 'undefined') return getDefaultProgress();
-  try {
-    const raw = localStorage.getItem(ONBOARDING_STORAGE_KEY);
-    if (!raw) return getDefaultProgress();
-    return { ...EMPTY_PROGRESS, ...JSON.parse(raw) };
-  } catch {
-    return getDefaultProgress();
-  }
+  const parsed = safeGetItem<Record<string, unknown> | null>(ONBOARDING_STORAGE_KEY, null);
+  return { ...EMPTY_PROGRESS, ...(parsed ?? {}) };
 }
 
 export function writeProgress(progress: OnboardingProgress): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(progress));
+  safeSetItem(ONBOARDING_STORAGE_KEY, progress);
 }
 
 export function markStepComplete(stepId: OnboardingStepId): OnboardingProgress {
@@ -90,12 +84,12 @@ export function markStepComplete(stepId: OnboardingStepId): OnboardingProgress {
 }
 
 export function isDismissed(): boolean {
-  if (typeof window === 'undefined') return false;
-  return localStorage.getItem(ONBOARDING_DISMISSED_KEY) === 'true';
+  return safeGetItem<boolean>(ONBOARDING_DISMISSED_KEY, false) === true;
 }
 
 export function dismissOnboarding(): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(ONBOARDING_DISMISSED_KEY, 'true');
-  window.dispatchEvent(new CustomEvent('savitools-onboarding-update'));
+  const result = safeSetItem(ONBOARDING_DISMISSED_KEY, true);
+  if (result.success && typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('savitools-onboarding-update'));
+  }
 }
