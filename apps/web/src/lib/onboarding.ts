@@ -67,8 +67,11 @@ export function isAllComplete(progress: OnboardingProgress): boolean {
 }
 
 export function readProgress(): OnboardingProgress {
-  const parsed = safeGetItem<Record<string, unknown> | null>(ONBOARDING_STORAGE_KEY, null);
-  return { ...EMPTY_PROGRESS, ...(parsed ?? {}) };
+  const parsed = safeGetItem<unknown>(ONBOARDING_STORAGE_KEY, null);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return getDefaultProgress();
+  }
+  return { ...EMPTY_PROGRESS, ...(parsed as Partial<OnboardingProgress>) };
 }
 
 export function writeProgress(progress: OnboardingProgress): void {
@@ -84,7 +87,8 @@ export function markStepComplete(stepId: OnboardingStepId): OnboardingProgress {
 }
 
 export function isDismissed(): boolean {
-  return safeGetItem<boolean>(ONBOARDING_DISMISSED_KEY, false) === true;
+  const val = safeGetItem<unknown>(ONBOARDING_DISMISSED_KEY, false);
+  return val === true || val === 'true';
 }
 
 export function dismissOnboarding(): void {

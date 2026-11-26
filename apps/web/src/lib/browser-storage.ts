@@ -116,6 +116,20 @@ export function safeSetRawItem(key: StorageKey, value: string): StorageWriteResu
 }
 
 /**
+ * Safely parses a JSON string into type T. Returns fallback if parsing fails, input is not a string, or is empty.
+ */
+export function safeJsonParse<T>(raw: string | null | undefined, fallback: T): T {
+  if (typeof raw !== 'string' || !raw.trim()) {
+    return fallback;
+  }
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+/**
  * Safely reads and JSON-parses a value from localStorage.
  * Returns the fallback if window is undefined, storage is blocked, key is missing, or payload is corrupted.
  */
@@ -129,7 +143,7 @@ export function safeGetItem<T>(key: StorageKey, fallback: T): T {
     if (raw === null || raw === undefined) {
       return fallback;
     }
-    return JSON.parse(raw) as T;
+    return safeJsonParse<T>(raw, fallback);
   } catch (err) {
     // Storage blocked or restricted
     return fallback;

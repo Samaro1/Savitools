@@ -16,6 +16,7 @@ import {
   type TransferLinkResult,
   type TomlCurrency,
 } from '@/lib/api';
+import { BROWSER_STORAGE_KEYS, safeGetItem, safeSetItem } from '@/lib/browser-storage';
 import {
   BookmarkPlus,
   AlertTriangle,
@@ -55,7 +56,10 @@ function loadSavedCounterparties(): SavedCounterparty[] {
   if (!Array.isArray(parsed)) return [];
   return parsed.filter(
     (item): item is SavedCounterparty =>
-      typeof item?.input === 'string' && typeof item?.name === 'string',
+      typeof item === 'object' &&
+      item !== null &&
+      typeof (item as SavedCounterparty).input === 'string' &&
+      typeof (item as SavedCounterparty).name === 'string',
   );
 }
 
@@ -874,7 +878,9 @@ export function FederationTool() {
   }, []);
 
   useEffect(() => {
-    safeSetItem(COUNTERPARTY_STORAGE_KEY, savedCounterparties.slice(0, 50));
+    // Bound counterparties to 50 entries to prevent quota exhaustion
+    const bounded = savedCounterparties.slice(0, 50);
+    safeSetItem(COUNTERPARTY_STORAGE_KEY, bounded);
   }, [savedCounterparties]);
 
   useEffect(() => {
